@@ -2,11 +2,10 @@ import scrapy
 from scrapy.linkextractors import LinkExtractor
 from scrapy.spiders import CrawlSpider, Rule
 from vanguardia.items import VanguardiaItem
-import os
-class VanspiderSpider(CrawlSpider):
+class VanSpider(scrapy.Spider):
     name = 'vanspider'
     def __init__(self):
-        super(VanspiderSpider,self).__init__()
+        super(VanSpider,self).__init__()
         self.allowed_domains = ['www.vanguardia.cu']
         self.start_urls = ['http://www.vanguardia.cu/ediciones-impresas']
         self.rules = (
@@ -47,9 +46,7 @@ class VanspiderSpider(CrawlSpider):
         empty = response.css('body > div > div > main > section > div > h1').get()
         not_found = 'no encontrada'
         if empty is not None and not_found in empty:
-            path = os.path.join(os.getcwd(), "missing.txt")
-            with open(path, 'a') as file:
-                file.write(response.url+'\n')
+            pass
         else:
             page_number = 1
             file_local_url = response.css(f'ul.list-group:nth-child(1) > li:nth-child({page_number}) > span:nth-child(1) > a:nth-child(1)::attr(href)').get()
