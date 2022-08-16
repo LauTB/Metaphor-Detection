@@ -27,7 +27,6 @@ class ANCORPUS():
             transformed.append(t)
         return transformed
 
-
 def load_anmet_nomet(nomet_filepath, met_filepath):
     mets = []
     nomets = []
