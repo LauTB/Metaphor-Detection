@@ -1,6 +1,9 @@
 from abc import ABC, abstractmethod
 import pymagnitude as magnitude
+# from gensim.models import FastText
+# from gensim.models import KeyedVectors
 from numpy import zeros
+import numpy as np
 class Embeddings(ABC):
     """
     Abstract Base Class for Word Embeddings.
@@ -53,7 +56,6 @@ class Magnitudes(Embeddings):
         :param list tokens: List of tokens to transform into Embeddings
         :return: List of embeddings for given tokens
         """
-
         return_list = []
         for token in tokens:
             if token == Embeddings.padding_marker:
@@ -68,4 +70,9 @@ class Magnitudes(Embeddings):
 
         return return_list
 
-t = Magnitudes('model\data\wiki-news-300d-1M.magnitude')
+# t = FastText.load_fasttext_format('model\data\cc.es.300.bin')
+# token = input("pon la palabra:")
+
+# if token in t:
+#     print(t[token])
+
