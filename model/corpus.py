@@ -8,7 +8,7 @@ class ANCORPUS():
     Corpus created with data from 
     https://github.com/ytsvetko/metaphor
     '''
-    def __init__(self) -> None:
+    def __init__(self):
         self.data = []
         self.data_lables = []
 
@@ -18,7 +18,8 @@ class ANCORPUS():
             for d in raw_data:
                 data = d.split()
                 self.data.append((data[0],data[1]))
-                self.data_lables.append(data[-1])
+                label = data[-1]
+                self.data_lables.append((int(label), int(not label)))
     
     def transform_data(self, embeddings):
         transformed = []
@@ -77,5 +78,5 @@ def prepare_an_met():
     joined = join_mets_nomets(met, nomet)
     create_joined_file(joined, 'an_joined')
 
-t = ANCORPUS()
-t.load_data(r'model\data\an_joined.txt')
+# t = ANCORPUS()
+# t.load_data(r'model\data\an_joined.txt')
