@@ -3,6 +3,12 @@ from nltk.corpus import wordnet as wn
 nltk.download('wordnet')
 nltk.download('omw-1.4')
 
+'''
+usage:
+data = expand(filepath)
+save_expanded(data)
+'''
+
 def get_syn(word):
   synonyms = set()
   for syn in wn.synsets(word):
@@ -41,3 +47,4 @@ def save_expanded(data):
     with open('an_joined_expanded.txt', 'w') as f:
         for d in data:
             f.write(' '.join(d)+'\n')
+
