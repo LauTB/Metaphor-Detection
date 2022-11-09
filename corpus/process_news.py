@@ -2,7 +2,9 @@ import nltk
 from nltk.tokenize import sent_tokenize
 import spacy
 from itertools import chain
+from googletrans import Translator
 import os
+translator = Translator()
 nlp = spacy.load("es_core_news_sm")
 an_set = set()
 
@@ -33,3 +35,31 @@ path = r'corpus\spanish_corpus.txt'
 with open(path, 'w') as f:
   for d in an_set:
     f.write(' '.join(d)+'\n')
+
+data = []
+with open(path, 'r') as f:
+  data = f.readlines()
+
+new_path = r'corpus\spanish_corpus_translated.txt'
+for d in data:
+  print(d)
+  new_data = translator.translate(d).text
+  print(new_data)
+  with open(new_path, 'a') as f:
+    f.write(new_data + '\n')
+
+data = []
+with open(new_path, 'r') as f:
+  data = f.readlines()
+
+#contando los descartados
+used_data = []
+skipped = []
+for i,d in enumerate(data):
+  if len(d.split()) > 2:
+    skipped.append(i)
+  used_data.append(d)
+
+with open(new_path, 'w') as f:
+  for d in used_data:
+    f.write(d)
