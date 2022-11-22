@@ -1,0 +1,58 @@
+\chapter{Detalles de Implementación y Experimentos}\label{chapter:implementation}
+\section{Los datos}
+El corpus utilizado para entrenar es el [\cite{Tsvetkov}] el cual se encuentra en inglés y tiene la siguiente forma:
+\begin{center}
+ ADJETIVO SUSTANTIVO ETIQUETA
+\end{center}
+La etiqueta es binaria representando si se está en presencia de una metáfora o no.\\
+Inicialmente, se contaban con 200 ejemplos de parejas adjetivo- sustantivo. Esa cantidad de ejemplos no sería suficiente para entrenar un modelo. La solución a la dificultad planteada fue aumentar los datos utilizando sinónimos. Dado que la carga meteórica se encontraba en el adjetivo se buscaron sinónimos dan del sustantivo y se añadieron al corpus los nuevos pares generados con la misma etiqueta La herramienta utilizada para esto fue Word Net [\cite{Miller}] vía la biblioteca de Python nltk. Usando esta técnica se obtuvieron un total de 1462 pares. Del Corpus construido se utilizó el 80\% para entrenar y el 20\% para evaluar.\\
+Una vez se tuvo el corpus expandido el próximo paso fue convertirte cada par en su representación vectorial. Para ello se utilizaron los word embeddings de [\cite{MikolovetAl}] a los cuales tienen 300 dimensiones.\\
+Usualmente para trabajar con word embeddings les necesario tener alta potencia de computo por el gran tamaño del archivo binario (u otro formato) En este caso no que necesario contar con una computadora de altas prestaciones, gracias la biblioteca PyMagnitude la cual cuenta con un algoritmo de compresión especializado para word embeddings. Gracias tal uso de dicha compresión fue posible representar el corpus como vectores.\\
+Los datos en español se obtuvieron del periódico Vanguardia. Para extraerlos se utilizó la biblioteca Scrapy. También se usó dicha biblioteca para extraer las versiones digitalizadas en pdf del periódico físico. \\
+Una vez se tuvieron los textos a procesar se utilizó la biblioteca por excelencia para el procesamiento de lenguaje natural: Spacy[\cite{spacy2}] para ponerle una etiqueta POS(Part of speech o parte del discurso) a cada oración y posteriormente extraer los pares adjetivo-sustantivo que estuvieran presentes en cada oración. Se obtuvieron 9186 pares con este proceso\\
+Finalmente se utilizó la biblioteca Googletrans para llevar los pares del español al inglés. Debido a este proceso de traducción 366 pares se volvieron frases de más palabras en inglés y por tanto fueron descartadas. El resto de los pares fue representado con los embeddings y obtuvo una etiqueta sobre su carga metafórica.
+\section{Los modelos}
+Ambos modelos fueron creados utilizando la biblioteca Tensorflow[\cite{tensorflow2015-whitepaper}] creada por Google.
+El primer modelo consiste en tres capas una capa de entrada, una capa bidireccional LSTM y una capa de salida. La función de pérdida es Categorical Crossentropy y la función de activación softmax. La Tabla 1 muestra los resultados obtenidos, puede apreciarse que la diferencia entre usar 7 y 10 epochs no es significativa, sin embargo el modelo presenta mejoría con respecto a usar 5 epochs.
+\begin{figure}[htb]%
+\begin{tabular}{c|c|c|c}
+Epochs & F1 & Precisión & Recobrado\\
+\hline
+5 & 0.7148 & 0.5767 & 0.9552\\
+\hline
+7 & 0.7176 & 0.5788 & 0.9607\\
+\hline
+10 & 0.7175 & 0.5782 & 0.9607\\
+\hline
+\end{tabular}
+\caption{Tabla 1: Experimentos con el modelo LSTM \label{Tabla:1}}%
+\end{figure}
+El segundo modelo es similar de primero, las principales diferencias están en que el en este modelo la segunda capa es una capa GRU y la función de activación es tahn. La Tabla 2 muestra los resultados obtenidos.\\
+\begin{figure}[htb]%
+\begin{tabular}{c|c|c|c}
+Epochs & F1 & Precisión & Recobrado\\
+\hline
+5 & 0.6304 & 0.4663 & 0.9833\\
+\hline
+7 & 0.5460 & 0.3912 & 0. 9264\\
+\hline
+10 & 0.5959 & 0.5730 & 0.6387\\
+\hline
+\end{tabular}
+\caption{Tabla 2: Experimentos con el modelo GRU \label{Tabla:2}}%
+\end{figure}
+Para la construcción del corpus en español se utilizó el modelo LSTM que entrenó 10 epochs. Se escogió por encima de los demás ya que la precisión es mayor con respecto a su contraparte en el modelo GRU.\\
+Como forma de validación se evaluó el modelo con el Corpus CoMeta[\cite{Sánchez}], el cual posee metáforas de varios tipos y de donde se obtuvieron 205 pares AN. La Tabla 3 muestra los resultados obtenidos en comparación con los del documento original de este corpus cuando es traducido al inglés.\\
+\begin{figure}[htb]%
+\begin{tabular}{c|c|c|c|c}
+Modelo & Epochs & F1 & Precisión & Recobrado\\
+\hline
+CoMeta & 10 & 0.3346 & 0.2324 & 0.5972\\
+\hline
+LSTM & 10 & 0.2684 & 0.1618 & 0.8435\\
+\hline
+GRU & 10 & 0.2171 & 0.1580 & 0.3469\\
+\hline
+\end{tabular}
+\caption{Tabla 3: Comparaciones con el estado del arte de CoMeta \label{Tabla:3}}%
+\end{figure}
